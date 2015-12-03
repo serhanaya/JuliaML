@@ -32,7 +32,7 @@ function fit(p::Perception, X, y)
 
   for _ in range(1, p.n_iter)
     errors = 0
-    for xi, target in zip(X, y)
+    for (xi, target) in zip(X, y)
       update = p.eta * (target - p.predict(xi))
       p.w_[2:end] += update * xi
       p.w_[1] += update
