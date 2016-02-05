@@ -22,4 +22,12 @@ function train(n::NeuralNet, t::Training)
 
             for j = 1:cols
                 inputWeightIn = n.InputLayer.listOfNeurons[j].listOfWeightIn
-                
+                inputWeight = inputWeightIn[1]
+                netValue = netValue + inputWeight * n.trainSet[i,j]
+            end
+
+            estimatedOutput = activationFnc(n, netValue)
+            realOutput = n.realOutputSet[i]
+            setError(realOutput - estimatedOutput)
+            
+
