@@ -67,20 +67,20 @@ end
 function printNet(n::NeuralNet)
     printLayer(n.iLayer)  # import Layer.printLayer method!
     println()
-    if (n.hLayer != nothing) # Check if null == nothing in Julia
+    if isdefined(n.hLayer) # n.HiddenLayer == null ?
         printLayer(n.listOfHiddenLayer)
         println()
     end
     printLayer(n.oLayer)
 end
-
+ 
 function trainNet(n::NeuralNet)
     if n.trainType == "PERCEPTRON"          
         return Perceptron.train(n)  # Import Perceptron.
     elseif n.trainType == "ADALINE"
         return Adaline.train(n)  # Import Adaline.
     else
-        throw(Error) # Throwing exceptions!
+        throw(ArgumentError(n.trainType+" does not exist in TrainingTypesENUM"))
     end
 end
 
@@ -93,6 +93,6 @@ function printTrainedResult(n::NeuralNet)
         Adaline.printTrainedResult(n) 
         break
     else
-        throw(IllegalArgument) # Throwing exceptions!
+        throw(ArgumentError(n.trainType+" does not exist in TrainingTypesENUM"))
     end
 end
