@@ -1,47 +1,59 @@
-# This is the beginning of basic Neural Network implementation. (as of 04-01-2016).
+# A neural network consist of several layers which are basically groups of neurons.
 
+# A vector is a one-dimensional array.
 typealias Vector{T} Array{T,1}
 
+# Layer hierarchy.
 abstract Layer
 abstract LayerIn <: Layer
 abstract LayerOut <: Layer
 abstract LayerHidden <: Layer
 
+# Define a neuron.
 type Neuron
     listOfWeightIn::Vector{Float64}
     listOfWeightOut::Vector{Float64}
+    function Neuron(;listOfWeightIn=0, listOfWeightOut=0)
+        new(listOfWeightIn, listOfWeightOut)
+    end
 end
 
+# Define InputLayer.
 type InputLayer <: LayerIn
     listOfNeurons::Vector{Neuron}
     numberOfNeuronsInLayer::Int64
-    function InputLayer(listOfNeurons, numberOfNeuronsInLayer)
-        new(Vector{Neuron}(0), 0)
+    function InputLayer(;listOfNeurons=Vector{Neuron}(0), 
+        numberOfNeuronsInLayer=0)
+        new(listOfNeurons, numberOfNeuronsInLayer)
     end
 end
 
+# Define OutputLayer.
 type OutputLayer <: LayerOut
     listOfNeurons::Vector{Neuron}
     numberOfNeuronsInLayer::Int64
-    function OutputLayer(listOfNeurons, numberOfNeuronsInLayer)
-        new(Vector{Neuron}(0), 0)
+    function OutputLayer(;listOfNeurons=Vector{Neuron}(0), 
+        numberOfNeuronsInLayer=0)
+        new(listOfNeurons, numberOfNeuronsInLayer)
     end
 end
 
+# Define HiddenLayer.
 type HiddenLayer <: LayerHidden
     listOfNeurons::Vector{Neuron}
     numberOfHiddenLayers::Int64
     numberOfNeuronsInLayer::Int64
-    function HiddenLayer(listOfNeurons, numberOfHiddenLayers, numberOfNeuronsInLayer)
-        new(Vector{Neuron}(0), 0, 0)
+    function HiddenLayer(;listOfNeurons=Vector{Neuron}(0), 
+        numberOfHiddenLayers=0, numberOfNeuronsInLayer=0)
+        new(listOfNeurons, numberOfHiddenLayers, numberOfNeuronsInLayer)
     end
 end
 
+# Generate a pseudo random number.
 function initNeuron()
     r = rand()
     return r
 end
-
 
 # Initializes the input layer with pseudo random numbers.
 function initLayer(iLayer::InputLayer)
@@ -61,7 +73,7 @@ function initLayer(iLayer::InputLayer)
     return iLayer
 end
 
-
+# Print InputLayer properties.
 function printLayer(iLayer::InputLayer)
     println("### INPUT LAYER ###")
     n = 1
@@ -72,7 +84,6 @@ function printLayer(iLayer::InputLayer)
         n += 1
     end
 end
-
 
 # Initializes the output layer with pseudo random numbers.
 function initLayer(oLayer::OutputLayer)
@@ -92,7 +103,7 @@ function initLayer(oLayer::OutputLayer)
     return oLayer
 end
 
-
+# Print OutputLayer properties.
 function printLayer(oLayer::OutputLayer)
     println("### OUTPUT LAYER ###")
     n = 1
@@ -103,7 +114,6 @@ function printLayer(oLayer::OutputLayer)
         n += 1
     end
 end
-
 
 # Initializes the hidden layer with pseudo random numbers.
 function initLayer(hLayer::HiddenLayer, iLayer::InputLayer,
@@ -159,7 +169,7 @@ function initLayer(hLayer::HiddenLayer, iLayer::InputLayer,
 
 end
 
-
+# Print HiddenLayer properties.
 function printLayer(listOfHiddenLayer::Vector{HiddenLayer})
     if size(listOfHiddenLayer) > 0
         println("### HIDDEN LAYER ###")
