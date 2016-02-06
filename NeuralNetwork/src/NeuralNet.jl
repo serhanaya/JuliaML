@@ -3,13 +3,13 @@
 # import learn.Training.ActivationFncENUM
 # import learn.Training.TrainingTypesENUM;
 
+# Parametric type definition of a Vector as an one-dimensional 
+# array, and a matrix as a two dimensional array. 
 typealias Vector{T} Array{T,1}
 typealias Matrix{T} Array{T,2}
 
-# ActivationFncENUM
-
-# TrainingTypesENUM
-
+@enum TrainingTypesENUM PERCEPTRON ADALINE
+@enum ActivationFncENUM STEP LINEAR SIGLOG HYPERTAN
 
 type NeuralNet
     iLayer::InputLayer
@@ -30,9 +30,10 @@ type NeuralNet
     errorMean::Float64
     listOfMSE::Vector{Float64}
 
-#    activationFnc::ActivationFncENUM
-#    activationFncOutputLayer::ActivationFncENUM
-#    trainType::TrainingTypesENUM
+
+    activationFncType::ActivationFncENUM
+    activationFncTypeOutputLayer::ActivationFncENUM
+    trainType::TrainingTypesENUM
 #    function NeuralNet(...) =
 #        new(listOfMSE = Vector{Float64}(0)...)
 end
@@ -40,34 +41,35 @@ end
 function initNet(numberOfInputNeurons::Int64, numberOfHiddenLayers::Int64,
     numberOfNeuronsInHiddenLayer::Int64, numberOfOutputNeurons::Int64)
 
-    iLayer = InputLayer(listOfNeurons = Vector{Neuron}(0),
+    inputLayer = InputLayer(listOfNeurons = Vector{Neuron}(0),
                         numberOfNeuronsInLayer = numberOfInputNeurons + 1)
     listOfHiddenLayer = Vector{HiddenLayer}(0)
 
     for i = 1:numberOfHiddenLayers
-        hLayer::HiddenLayer
-        hLayer.numberOfNeuronsInLayer = numberOfNeuronsInHiddenLayer
-        push!( listOfHiddenLayer, hLayer )
+        hiddenLayer = HiddenLayer()
+        hiddenLayer.numberOfNeuronsInLayer = numberOfNeuronsInHiddenLayer
+        push!( listOfHiddenLayer, hiddenLayer )
     end
 
-    oLayer.numberOfNeuronsInLayer = numberOfOutputNeurons
-    iLayer = initLayer(iLayer) # import Layer.initLayer method.
+    outputLayer.numberOfNeuronsInLayer = numberOfOutputNeurons
+    inputLayer = initLayer(inputLayer) # import Layer.initLayer method.
 
     if numberOfHiddenLayers > 0
-        listOfHiddenLayer = initLayer(hLayer,  iLayer, oLayer,
+        listOfHiddenLayer = initLayer(hiddenLayer,  inputLayer, outputLayer,
                                       listOfHiddenLayer) # import Layer.initLayer method.
     end
 
-    oLayer = initLayer(oLayer)
+    ouputLayer = initLayer(ouputLayer) # import Layer.initLayer method.
 
-    newNet = NeuralNet(iLayer, hLayer, listOfHiddenLayer, 
-                       numberOfHiddenLayers, oLayer)  # Create Constructor for this situation!!
+    newNet = NeuralNet(inputLayer, hiddenLayer, listOfHiddenLayer, 
+                       numberOfHiddenLayers, outputLayer)  # Create Constructor for this situation!!
+    return newNet
 end
 
 function printNet(n::NeuralNet)
     printLayer(n.iLayer)  # import Layer.printLayer method!
     println()
-    if isdefined(n.hLayer) # n.HiddenLayer == null ?
+    if isdefined(n.hLayer) != false # n.HiddenLayer == null ?
         printLayer(n.listOfHiddenLayer)
         println()
     end
@@ -75,9 +77,9 @@ function printNet(n::NeuralNet)
 end
  
 function trainNet(n::NeuralNet)
-    if n.trainType == "PERCEPTRON"          
+    if n.trainType == PERCEPTRON          
         return Perceptron.train(n)  # Import Perceptron.
-    elseif n.trainType == "ADALINE"
+    elseif n.trainType == ADALINE
         return Adaline.train(n)  # Import Adaline.
     else
         throw(ArgumentError(n.trainType+" does not exist in TrainingTypesENUM"))
@@ -86,13 +88,14 @@ end
 
 
 function printTrainedResult(n::NeuralNet)
-    if n.trainType == "PERCEPTRON"  
+    if n.trainType == PERCEPTRON 
         Perceptron.printTrainedResult(n)  # Import Perceptron. 
         break
-    elseif n.trainType == "ADALINE"
+    elseif n.trainType == ADALINE
         Adaline.printTrainedResult(n) 
         break
     else
         throw(ArgumentError(n.trainType+" does not exist in TrainingTypesENUM"))
     end
 end
+
