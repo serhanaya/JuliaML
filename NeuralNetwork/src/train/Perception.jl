@@ -1,3 +1,5 @@
+# To be implemented into NeuralNet
+
 type Perception
   """
   eta : Learning rate
