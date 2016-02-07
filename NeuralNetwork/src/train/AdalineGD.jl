@@ -1,3 +1,6 @@
+# To be implemented into NeuralNet
+# In progress.
+
 type AdalineGD
   """ADAptive LInear NEuron classifier.
 
