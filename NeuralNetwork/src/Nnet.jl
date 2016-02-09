@@ -47,11 +47,11 @@ type NeuralNet
     end
 end
 
+
 function initNet(numberOfInputNeurons::Int64, numberOfHiddenLayers::Int64,
     numberOfNeuronsInHiddenLayer::Int64, numberOfOutputNeurons::Int64)
 
-    inputLayer = InputLayer(listOfNeurons = Vector{Neuron}(0),
-                        numberOfNeuronsInLayer = numberOfInputNeurons + 1)  # Bias
+    inputLayer = InputLayer(numberOfNeuronsInLayer = numberOfInputNeurons + 1)
     
     hiddenLayer = HiddenLayer() # If there is no hidden layer.
     listOfHiddenLayer = Vector{HiddenLayer}(0)
@@ -72,29 +72,29 @@ function initNet(numberOfInputNeurons::Int64, numberOfHiddenLayers::Int64,
     outputLayer = initLayer(outputLayer) 
 
     newNet = NeuralNet(inputLayer, hiddenLayer, listOfHiddenLayer,
-                       numberOfHiddenLayers, outputLayer)  # Create Constructor for this situation!!
+                       numberOfHiddenLayers, outputLayer)
     return newNet
 end
 
+
 function printNet(n::NeuralNet)
-    printLayer(n.inputLayer)  # import Layer.printLayer
+    printLayer(n.inputLayer) 
     println()
-     # if n.HiddenLayer != null
     printLayer(n.listOfHiddenLayer)
     println()
     printLayer(n.outputLayer)
 end
-
-typealias Vector{T} Array{T,1}
 
 
 function train(n::NeuralNet)
     inputWeightIn = Vector{Float64}(0)
     rows = size(n.trainSet)[1]
     cols = size(n.trainSet)[2]
+    
     epochs = 0
     error = 0.0
     mse = 0.0
+    
 
     while epochs < n.maxEpochs
         estimatedOutput = 0.0
@@ -117,7 +117,7 @@ function train(n::NeuralNet)
                 # fix weights
                 inputLayerTemp =
                     InputLayer(listOfNeurons = teachNeuronsOfLayer(cols, i,
-                        n, netValue))  # Fix constructor of InputLayer.
+                        n, netValue, error)) 
                 n.inputLayer = inputLayerTemp
             end
         end
@@ -134,11 +134,10 @@ end
 
 
 function teachNeuronsOfLayer(numberOfInputNeurons::Int64, line::Int64,
-        n::NeuralNet, netValue::Float64)
-    listOfNeuronsUpdate = Vector{Neuron}(0)
+        n::NeuralNet, netValue::Float64, error::Float64)
+    listOfNeurons = Vector{Neuron}(0)
     inputWeightsInNew = Vector{Float64}(0)
     inputWeightsInOld = Vector{Float64}(0)
-    error = 0.0
 
     for j = 1:numberOfInputNeurons
         inputWeightsInOld = n.inputLayer.listOfNeurons[j].listOfWeightIn
@@ -147,13 +146,13 @@ function teachNeuronsOfLayer(numberOfInputNeurons::Int64, line::Int64,
         push!( inputWeightsInNew, calcNewWeight(n.trainType,
             inputWeightOld, n, error, n.trainSet[line,j], netValue) )
 
-        neuron = Neuron()  # Constructor needed.
+        neuron = Neuron() 
         neuron.listOfWeightIn = inputWeightsInNew
-        push!( listOfNeuronsUpdate, neuron )
+        push!( listOfNeurons, neuron )
         inputWeightsInNew = Vector{Float64}(0)
     end
 
-    return listOfNeuronsUpdate
+    return listOfNeurons
 end
 
 
@@ -161,15 +160,16 @@ function calcNewWeight(trainType::TrainingTypesENUM, inputWeightOld::Float64,
     n::NeuralNet, error::Float64, trainSample::Float64, netValue::Float64)
 
     if trainType == TrainingTypesENUM(PERCEPTRON)
-        return inputWeightOld + n.learningRate * error * trainSample
-    elseif TrainingTypesENUM(ADALINE)
-        return inputWeightOld * n.learningRate * error * trainSample *
-             derivativeActivationFnc(n.activationFncType, netValue)
+        return ( inputWeightOld + n.learningRate * error * trainSample )
+    elseif trainType == TrainingTypesENUM(ADALINE)
+        return ( inputWeightOld * n.learningRate * error * trainSample * 
+            derivativeActivationFnc(n.activationFncType, netValue) )
     else
         throw(ArgumentError(trainType
                     + " does not exist in TrainingTypesENUM"))
     end
 end
+
 
 function activationFnc(fnc::ActivationFncENUM, value::Float64)
 
@@ -179,13 +179,12 @@ function activationFnc(fnc::ActivationFncENUM, value::Float64)
         else
             return 0.0
         end
-        return value
 
     elseif fnc == ActivationFncENUM(LINEAR)
         return value
 
     elseif fnc == ActivationFncENUM(SIGLOG)
-        return 1.0 / (1.0 + exp(-value))
+        return ( 1.0 / (1.0 + exp(-value)) )
 
     elseif fnc == ActivationFncENUM(HYPERTAN)   
         return tanh(value)
@@ -196,6 +195,7 @@ function activationFnc(fnc::ActivationFncENUM, value::Float64)
 
     end
 end
+
 
 function derivativeActivationFnc(fnc::ActivationFncENUM, value::Float64)
 
@@ -214,6 +214,7 @@ function derivativeActivationFnc(fnc::ActivationFncENUM, value::Float64)
 
     end
 end
+
 
 function printTrainedNetResult(trainedNet::NeuralNet)
     rows = size(trainedNet.trainSet)[1]
@@ -239,5 +240,6 @@ function printTrainedNetResult(trainedNet::NeuralNet)
 
     end
 end
+
 
 end # module

@@ -6,9 +6,6 @@ typealias Matrix{T} Array{T,2}
 
 # Layer hierarchy.
 abstract Layer
-abstract LayerIn <: Layer
-abstract LayerOut <: Layer
-abstract LayerHidden <: Layer
 
 # Define a neuron.
 type Neuron
@@ -21,7 +18,7 @@ type Neuron
 end
 
 # Define InputLayer.
-type InputLayer <: LayerIn
+type InputLayer <: Layer
     listOfNeurons::Vector{Neuron}
     numberOfNeuronsInLayer::Int64
     function InputLayer(;listOfNeurons=Vector{Neuron}(0), 
@@ -31,7 +28,7 @@ type InputLayer <: LayerIn
 end
 
 # Define OutputLayer.
-type OutputLayer <: LayerOut
+type OutputLayer <: Layer
     listOfNeurons::Vector{Neuron}
     numberOfNeuronsInLayer::Int64
     function OutputLayer(;listOfNeurons=Vector{Neuron}(0), 
@@ -41,13 +38,12 @@ type OutputLayer <: LayerOut
 end
 
 # Define HiddenLayer.
-type HiddenLayer <: LayerHidden
+type HiddenLayer <: Layer
     listOfNeurons::Vector{Neuron}
-    numberOfHiddenLayers::Int64
     numberOfNeuronsInLayer::Int64
     function HiddenLayer(;listOfNeurons=Vector{Neuron}(0), 
-        numberOfHiddenLayers=0, numberOfNeuronsInLayer=0)
-        new(listOfNeurons, numberOfHiddenLayers, numberOfNeuronsInLayer)
+        numberOfNeuronsInLayer=0)
+        new(listOfNeurons, numberOfNeuronsInLayer)
     end
 end
 
@@ -59,18 +55,18 @@ end
 
 # Initializes the input layer with pseudo random numbers.
 function initLayer(inputLayer::InputLayer)
-    listOfWeightInTemp = Vector{Float64}(0)
-    listOfNeuronsUpdate = Vector{Neuron}(0)
+    listOfWeightIn = Vector{Float64}(0)
+    listOfNeurons = Vector{Neuron}(0)
     for i=1:inputLayer.numberOfNeuronsInLayer
         neuron = Neuron()
-        push!( listOfWeightInTemp, initNeuron() );
-        neuron.listOfWeightIn = listOfWeightInTemp;
-        push!( listOfNeuronsUpdate, neuron )
+        push!( listOfWeightIn, initNeuron() );
+        neuron.listOfWeightIn = listOfWeightIn;
+        push!( listOfNeurons, neuron )
 
-        listOfWeightInTemp = Vector{Float64}(0)
+        listOfWeightIn = Vector{Float64}(0)
     end
 
-    inputLayer.listOfNeurons = listOfNeuronsUpdate
+    inputLayer.listOfNeurons = listOfNeurons
 
     return inputLayer
 end
@@ -87,20 +83,21 @@ function printLayer(inputLayer::InputLayer)
     end
 end
 
+
 # Initializes the output layer with pseudo random numbers.
 function initLayer(outputLayer::OutputLayer)
-    listOfWeightOutTemp = Vector{Float64}(0)
-    listOfNeuronsUpdate = Vector{Neuron}(0)
+    listOfWeightOut = Vector{Float64}(0)
+    listOfNeurons = Vector{Neuron}(0)
     for i=1:outputLayer.numberOfNeuronsInLayer
         neuron = Neuron()
-        push!( listOfWeightOutTemp, initNeuron() );
-        neuron.listOfWeightOut = listOfWeightOutTemp;
-        push!( listOfNeuronsUpdate, neuron )
+        push!( listOfWeightOut, initNeuron() );
+        neuron.listOfWeightOut = listOfWeightOut;
+        push!( listOfNeurons, neuron )
 
-        listOfWeightOutTemp = Vector{Float64}(0)
+        listOfWeightOut = Vector{Float64}(0)
     end
 
-    outputLayer.listOfNeurons = listOfNeuronsUpdate
+    outputLayer.listOfNeurons = listOfNeurons
 
     return outputLayer
 end
@@ -120,50 +117,51 @@ end
 # Initializes the hidden layer with pseudo random numbers.
 function initLayer(hiddenLayer::HiddenLayer, inputLayer::InputLayer,
                    outputLayer::OutputLayer, listOfHiddenLayer::Vector{HiddenLayer})
-    listOfWeightInTemp = Vector{Float64}(0)
-    listOfWeightOutTemp = Vector{Float64}(0)
-    listOfNeuronsUpdate = Vector{Float64}(0)
+    listOfWeightIn = Vector{Float64}(0)
+    listOfWeightOut = Vector{Float64}(0)
+    listOfNeurons = Vector{Float64}(0)
 
-    numberOfNeuronsInLayer = length(listOfHiddenLayer)
+    numberOfHiddenLayers = size(listOfHiddenLayer)[1]
 
-    for i=1:hiddenLayer.numberOfHiddenLayers
+    for i=1:numberOfHiddenLayers
         for j=1:hiddenLayer.numberOfNeuronsInLayer
-            neuron = Neuron(Vector{Float64}(0), Vector{Float64}(0))
+            neuron = Neuron()
 
-            if (i == 1)
-                if hiddenLayer.numberOfHiddenLayers > 1
+            if (i == 1)  # First
+                limitIn = inputLayer.numberOfNeuronsInLayer
+                if numberOfHiddenLayers > 1
                 limitOut = listOfHiddenLayer[i+1].numberOfNeuronsInLayer
                 else
                 limitOut = listOfHiddenLayer[i].numberOfNeuronsInLayer
                 end
-            elseif (i == hiddenLayer.numberOfHiddenLayers)
+            elseif (i == numberOfHiddenLayers)  # Last
                 limitIn = listOfHiddenLayer[i-1]
                 limitOut = outputLayer.numberOfNeuronsInLayer
-            else
+            else  # Middle
                 limitIn = listOfHiddenLayer[i-1].numberOfNeuronsInLayer
                 limitOut = listOfHiddenLayer[i+1].numberOfNeuronsInLayer
             end
 
             for k=1:limitIn
-                push!( listOfWeightInTemp, initNeuron() )
+                push!( listOfWeightIn, initNeuron() )
             end
 
             for k=1:limitOut
-                push!( listOfWeightOutTemp, initNeuron() )
+                push!( listOfWeightOut, initNeuron() )
             end
 
-            inputLayer.listOfWeightIn = listOfWeightInTemp
-            outputLayer.listOfWeightOut = listOfWeightOutTemp
+            neuron.listOfWeightIn = listOfWeightIn
+            neuron.listOfWeightOut = listOfWeightOut
 
-            push!( listOfNeuronsUpdate, neuron )
+            push!( listOfNeurons, neuron )
 
-            listOfWeightInTemp = Vector{Float64}(0)
-            listOfWeightOutTemp = Vector{Float64}(0)
+            listOfWeightIn = Vector{Float64}(0)
+            listOfWeightOut = Vector{Float64}(0)
 
         end
 
-        listOfHiddenLayer[i].listOfNeurons  = listOfNeuronsUpdate
-        listOfNeuronsUpdate = Vector{Float64}(0)
+        listOfHiddenLayer[i].listOfNeurons  = listOfNeurons
+        listOfNeurons = Vector{Float64}(0)
 
     end
 
