@@ -1,10 +1,3 @@
-module Nnet
-
-export NeuralNet
-
-include("layer.jl")
-include("nnetTest.jl")
-
 @enum TrainingTypesENUM PERCEPTRON ADALINE
 @enum ActivationFncENUM STEP LINEAR SIGLOG HYPERTAN
 
@@ -12,7 +5,7 @@ type NeuralNet
 
     inputLayer::InputLayer
     hiddenLayer::HiddenLayer
-    listOfHiddenLayer::Vector{HiddenLayer}  
+    listOfHiddenLayer::Vector{HiddenLayer}
     numberOfHiddenLayers::Int64
     outputLayer::OutputLayer
 
@@ -33,14 +26,14 @@ type NeuralNet
     activationFncTypeOutputLayer::ActivationFncENUM
     trainType::TrainingTypesENUM
 
-    function NeuralNet(inputLayer, hiddenLayer, listOfHiddenLayer, numberOfHiddenLayers, 
+    function NeuralNet(inputLayer, hiddenLayer, listOfHiddenLayer, numberOfHiddenLayers,
             outputLayer; trainSet=Matrix{Float64}(0,0), validationSet=Matrix{Float64}(0,0),
-            realOutputSet=Vector{Float64}(0), realMatrixOutputSet=Matrix{Float64}(0,0), 
+            realOutputSet=Vector{Float64}(0), realMatrixOutputSet=Matrix{Float64}(0,0),
             maxEpochs=0, learningRate=0, targetError=0, trainingError=0, errorMean=0,
-            listOfMSE=Vector{Float64}(0), activationFncType=STEP, 
+            listOfMSE=Vector{Float64}(0), activationFncType=STEP,
             activationFncTypeOutputLayer=STEP, trainType=PERCEPTRON)
 
-        new(inputLayer, hiddenLayer, listOfHiddenLayer, numberOfHiddenLayers, 
+        new(inputLayer, hiddenLayer, listOfHiddenLayer, numberOfHiddenLayers,
             outputLayer, trainSet, validationSet, realOutputSet, realMatrixOutputSet,
             maxEpochs, learningRate, targetError, trainingError, errorMean, listOfMSE,
             activationFncType, activationFncTypeOutputLayer, trainType)
@@ -52,7 +45,7 @@ function initNet(numberOfInputNeurons::Int64, numberOfHiddenLayers::Int64,
     numberOfNeuronsInHiddenLayer::Int64, numberOfOutputNeurons::Int64)
 
     inputLayer = InputLayer(numberOfNeuronsInLayer = numberOfInputNeurons + 1)
-    
+
     hiddenLayer = HiddenLayer() # If there is no hidden layer.
     listOfHiddenLayer = Vector{HiddenLayer}(0)
 
@@ -62,14 +55,14 @@ function initNet(numberOfInputNeurons::Int64, numberOfHiddenLayers::Int64,
     end
 
     outputLayer = OutputLayer(numberOfNeuronsInLayer=numberOfOutputNeurons)
-    inputLayer = initLayer(inputLayer) 
+    inputLayer = initLayer(inputLayer)
 
     if numberOfHiddenLayers > 0
         listOfHiddenLayer = initLayer(hiddenLayer,  inputLayer, outputLayer,
                                       listOfHiddenLayer)
     end
 
-    outputLayer = initLayer(outputLayer) 
+    outputLayer = initLayer(outputLayer)
 
     newNet = NeuralNet(inputLayer, hiddenLayer, listOfHiddenLayer,
                        numberOfHiddenLayers, outputLayer)
@@ -78,7 +71,7 @@ end
 
 
 function printNet(n::NeuralNet)
-    printLayer(n.inputLayer) 
+    printLayer(n.inputLayer)
     println()
     printLayer(n.listOfHiddenLayer)
     println()
@@ -86,15 +79,15 @@ function printNet(n::NeuralNet)
 end
 
 
-function train(n::NeuralNet)
+function train!(n::NeuralNet)
     inputWeightIn = Vector{Float64}(0)
     rows = size(n.trainSet)[1]
     cols = size(n.trainSet)[2]
-    
+
     epochs = 0
     error = 0.0
     mse = 0.0
-    
+
 
     while epochs < n.maxEpochs
         estimatedOutput = 0.0
@@ -117,7 +110,7 @@ function train(n::NeuralNet)
                 # fix weights
                 inputLayerTemp =
                     InputLayer(listOfNeurons = teachNeuronsOfLayer(cols, i,
-                        n, netValue, error)) 
+                        n, netValue, error))
                 n.inputLayer = inputLayerTemp
             end
         end
@@ -146,7 +139,7 @@ function teachNeuronsOfLayer(numberOfInputNeurons::Int64, line::Int64,
         push!( inputWeightsInNew, calcNewWeight(n.trainType,
             inputWeightOld, n, error, n.trainSet[line,j], netValue) )
 
-        neuron = Neuron() 
+        neuron = Neuron()
         neuron.listOfWeightIn = inputWeightsInNew
         push!( listOfNeurons, neuron )
         inputWeightsInNew = Vector{Float64}(0)
@@ -162,7 +155,7 @@ function calcNewWeight(trainType::TrainingTypesENUM, inputWeightOld::Float64,
     if trainType == TrainingTypesENUM(PERCEPTRON)
         return ( inputWeightOld + n.learningRate * error * trainSample )
     elseif trainType == TrainingTypesENUM(ADALINE)
-        return ( inputWeightOld * n.learningRate * error * trainSample * 
+        return ( inputWeightOld + n.learningRate * error * trainSample *
             derivativeActivationFnc(n.activationFncType, netValue) )
     else
         throw(ArgumentError(trainType
@@ -186,7 +179,7 @@ function activationFnc(fnc::ActivationFncENUM, value::Float64)
     elseif fnc == ActivationFncENUM(SIGLOG)
         return ( 1.0 / (1.0 + exp(-value)) )
 
-    elseif fnc == ActivationFncENUM(HYPERTAN)   
+    elseif fnc == ActivationFncENUM(HYPERTAN)
         return tanh(value)
 
     else
@@ -228,18 +221,15 @@ function printTrainedNetResult(trainedNet::NeuralNet)
             inputWeightIn = trainedNet.inputLayer.listOfNeurons[j].listOfWeightIn
             inputWeight = inputWeightIn[1]
             netValue = netValue + inputWeight * trainedNet.trainSet[i,j]
-            print(trainedNet.trainSet[i,j], "\t")  
+            print(trainedNet.trainSet[i,j], "\t")
         end
 
         estimatedOutput = activationFnc(trainedNet.activationFncType, netValue)
-        
-        print(" NET OUTPUT: ", estimatedOutput, "\t");  
+
+        print(" NET OUTPUT: ", estimatedOutput, "\t");
         print(" REAL OUTPUT: ", trainedNet.realOutputSet[i], "\t")
         error = estimatedOutput - trainedNet.realOutputSet[i]
         print(" ERROR: ", error, "\n")
 
     end
 end
-
-
-end # module

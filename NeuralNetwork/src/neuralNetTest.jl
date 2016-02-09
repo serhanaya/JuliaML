@@ -18,7 +18,7 @@ function testPerceptron()
     testNet.trainType = TrainingTypesENUM(PERCEPTRON)
     testNet.activationFncType = ActivationFncENUM(STEP)
 
-    trainedNet = train(testNet)
+    trainedNet = train!(testNet)
 
     println()
     println("---------PERCEPTRON TRAINED NET---------")
@@ -44,13 +44,13 @@ function testAdaline()
                          1.0 0.25 0.30 0.98 ; 1.0 0.75 0.85 0.91 ;
                          1.0 0.43 0.57 0.87 ; 1.0 0.05 0.06 0.01 ]
     testNet.realOutputSet = [0.80, 0.59, 0.23, 0.45, 0.74, 0.63, 0.10]
-    testNet.maxEpochs = 100
+    testNet.maxEpochs = 20
     testNet.targetError = 0.0001
     testNet.learningRate = 0.5
     testNet.trainType = TrainingTypesENUM(ADALINE)
     testNet.activationFncType = ActivationFncENUM(LINEAR)
 
-    trainedNet = train(testNet)
+    trainedNet = train!(testNet)
 
     println()
     println("---------ADALINE TRAINED NET---------")
@@ -64,5 +64,5 @@ function testAdaline()
     println()
     println("---------ADALINE MSE BY EPOCH---------")
     println(trainedNet.listOfMSE)
-    
+
 end
