@@ -6,7 +6,7 @@ type NeuralNet
     inputLayer::InputLayer
     hiddenLayer::HiddenLayer
     listOfHiddenLayer::Vector{HiddenLayer}
-    numberOfHiddenLayers::Int64
+    numberOfHiddenLayers::Int
     outputLayer::OutputLayer
 
     trainSet::Matrix{Float64}
@@ -14,7 +14,7 @@ type NeuralNet
     realOutputSet::Vector{Float64}
     realMatrixOutputSet::Matrix{Float64}
 
-    maxEpochs::Int64
+    maxEpochs::Int
     learningRate::Float64
     targetError::Float64
     trainingError::Float64
@@ -41,8 +41,8 @@ type NeuralNet
 end
 
 
-function initNet(numberOfInputNeurons::Int64, numberOfHiddenLayers::Int64,
-    numberOfNeuronsInHiddenLayer::Int64, numberOfOutputNeurons::Int64)
+function initNet(numberOfInputNeurons::Int, numberOfHiddenLayers::Int,
+    numberOfNeuronsInHiddenLayer::Int, numberOfOutputNeurons::Int)
 
     inputLayer = InputLayer(numberOfNeuronsInLayer = numberOfInputNeurons + 1)
 
@@ -126,7 +126,7 @@ function train!(n::NeuralNet)
 end
 
 
-function teachNeuronsOfLayer(numberOfInputNeurons::Int64, line::Int64,
+function teachNeuronsOfLayer(numberOfInputNeurons::Int, line::Int,
         n::NeuralNet, netValue::Float64, error::Float64)
     listOfNeurons = Vector{Neuron}(0)
     inputWeightsInNew = Vector{Float64}(0)

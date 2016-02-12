@@ -11,17 +11,21 @@ abstract Layer
 type Neuron
     listOfWeightIn::Vector{Float64}
     listOfWeightOut::Vector{Float64}
-    function Neuron(;listOfWeightIn=Vector{Float64}(0), 
-        listOfWeightOut=Vector{Float64}(0))
-        new(listOfWeightIn, listOfWeightOut)
+    outputValue::Float64
+    error::Float64
+    sensibility::Float64
+    function Neuron(;listOfWeightIn=Vector{Float64}(0),
+        listOfWeightOut=Vector{Float64}(0), outputValue=0.0, error=0.0
+        sensibility=0.0)
+        new(listOfWeightIn, listOfWeightOut, outputValue, error, sensibility)
     end
 end
 
 # Define InputLayer.
 type InputLayer <: Layer
     listOfNeurons::Vector{Neuron}
-    numberOfNeuronsInLayer::Int64
-    function InputLayer(;listOfNeurons=Vector{Neuron}(0), 
+    numberOfNeuronsInLayer::Int
+    function InputLayer(;listOfNeurons=Vector{Neuron}(0),
         numberOfNeuronsInLayer=0)
         new(listOfNeurons, numberOfNeuronsInLayer)
     end
@@ -30,8 +34,8 @@ end
 # Define OutputLayer.
 type OutputLayer <: Layer
     listOfNeurons::Vector{Neuron}
-    numberOfNeuronsInLayer::Int64
-    function OutputLayer(;listOfNeurons=Vector{Neuron}(0), 
+    numberOfNeuronsInLayer::Int
+    function OutputLayer(;listOfNeurons=Vector{Neuron}(0),
         numberOfNeuronsInLayer=0)
         new(listOfNeurons, numberOfNeuronsInLayer)
     end
@@ -40,8 +44,8 @@ end
 # Define HiddenLayer.
 type HiddenLayer <: Layer
     listOfNeurons::Vector{Neuron}
-    numberOfNeuronsInLayer::Int64
-    function HiddenLayer(;listOfNeurons=Vector{Neuron}(0), 
+    numberOfNeuronsInLayer::Int
+    function HiddenLayer(;listOfNeurons=Vector{Neuron}(0),
         numberOfNeuronsInLayer=0)
         new(listOfNeurons, numberOfNeuronsInLayer)
     end
@@ -123,36 +127,45 @@ function initLayer(hiddenLayer::HiddenLayer, inputLayer::InputLayer,
 
     numberOfHiddenLayers = size(listOfHiddenLayer)[1]
 
-    for i=1:numberOfHiddenLayers
-        for j=1:hiddenLayer.numberOfNeuronsInLayer
+    for hdn_i=1:numberOfHiddenLayers
+        for neuron_i=1:hiddenLayer.numberOfNeuronsInLayer
             neuron = Neuron()
 
-            if (i == 1)  # First
+            limitIn = 0
+            limitOut = 0
+
+            if (hdn_i == 1)  # First
                 limitIn = inputLayer.numberOfNeuronsInLayer
                 if numberOfHiddenLayers > 1
-                limitOut = listOfHiddenLayer[i+1].numberOfNeuronsInLayer
-                else
-                limitOut = listOfHiddenLayer[i].numberOfNeuronsInLayer
+                    limitOut = listOfHiddenLayer[hdn_i+1].numberOfNeuronsInLayer
+                elseif numberOfHiddenLayers == 1
+                    limitOut = outputLayer.numberOfNeuronsInLayer
                 end
-            elseif (i == numberOfHiddenLayers)  # Last
-                limitIn = listOfHiddenLayer[i-1]
+            elseif (hdn_i == numberOfHiddenLayers)  # Last
+                limitIn = listOfHiddenLayer[hdn_i-1].numberOfNeuronsInLayer
                 limitOut = outputLayer.numberOfNeuronsInLayer
             else  # Middle
-                limitIn = listOfHiddenLayer[i-1].numberOfNeuronsInLayer
-                limitOut = listOfHiddenLayer[i+1].numberOfNeuronsInLayer
+                limitIn = listOfHiddenLayer[hdn_i-1].numberOfNeuronsInLayer
+                limitOut = listOfHiddenLayer[hdn_i+1].numberOfNeuronsInLayer
             end
 
-            for k=1:limitIn
+            limitIn = limitIn - 1  # bias not connected
+            limitOut = limitOut - 1  # bias not connected
+
+            if neuron_i >= 1  # bias has no input
+                for k=1:(limitIn + 1)
                 push!( listOfWeightIn, initNeuron() )
+                # push!( listOfWeightIn, initNeuron(k, neuron_i, 1) )
+                end
             end
 
-            for k=1:limitOut
+            for k=1:(limitOut + 1)
                 push!( listOfWeightOut, initNeuron() )
+                # push!( listOfWeightOut, initNeuron(k, neuron_i, 2) )
             end
 
             neuron.listOfWeightIn = listOfWeightIn
             neuron.listOfWeightOut = listOfWeightOut
-
             push!( listOfNeurons, neuron )
 
             listOfWeightIn = Vector{Float64}(0)
