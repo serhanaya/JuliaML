@@ -15,7 +15,7 @@ type Neuron
     error::Float64
     sensibility::Float64
     function Neuron(;listOfWeightIn=Vector{Float64}(0),
-        listOfWeightOut=Vector{Float64}(0), outputValue=0.0, error=0.0
+        listOfWeightOut=Vector{Float64}(0), outputValue=0.0, error=0.0,
         sensibility=0.0)
         new(listOfWeightIn, listOfWeightOut, outputValue, error, sensibility)
     end
@@ -202,3 +202,5 @@ function printLayer(listOfHiddenLayer::Vector{HiddenLayer})
         end
     end
 end
+
+

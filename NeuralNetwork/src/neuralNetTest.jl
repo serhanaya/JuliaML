@@ -66,3 +66,96 @@ function testAdaline()
     println(trainedNet.listOfMSE)
 
 end
+
+function testBackpropagation()
+    testNet = initNet(2, 1, 3, 2)
+
+    println("---------BACKPROPAGATION INIT NET---------")
+
+    printNet(testNet)
+
+    # first column has BIAS
+    testNet.trainSet = [ 1.0 1.0 0.73 ; 1.0 1.0 0.81 ; 1.0 1.0 0.86 ; 
+                         1.0 1.0 0.95 ; 1.0 0.0 0.45 ; 1.0 1.0 0.70 ;
+                         1.0 0.0 0.51 ; 1.0 1.0 0.89 ; 1.0 1.0 0.79 ;
+                         1.0 0.0 0.54 ]
+    testNet.realMatrixOutputSet = [ 1.0 0.0; 1.0 0.0; 1.0 0.0; 
+                                    1.0 0.0; 1.0 0.0; 0.0 1.0;
+                                    0.0 1.0; 0.0 1.0; 0.0 1.0; 
+                                    0.0 1.0 ]
+
+    testNet.maxEpochs = 1000
+    testNet.targetError = 0.002
+    testNet.learningRate = 0.1
+    testNet.trainType = TrainingTypesENUM(BACKPROPAGATION)
+    testNet.activationFncType = ActivationFncENUM(SIGLOG)
+    testNet.activationFncTypeOutputLayer = ActivationFncENUM(LINEAR)
+
+    trainedNet = trainNet(testNet)
+
+    println()
+    println("---------BACKPROPAGATION TRAINED NET---------")
+
+    printNet(trainedNet)
+
+end
+
+
+function testLMA()
+    testNet = initNet(2, 1, 3, 2)
+
+    println("---------LEVENBERG-MARQUARDT NET---------")
+
+    printNet(testNet)
+
+     # first column has BIAS
+    testNet.trainSet = [ 1.0 1.0 0.73 ; 1.0 1.0 0.81 ; 1.0 1.0 0.86 ; 
+                         1.0 1.0 0.95 ; 1.0 0.0 0.45 ; 1.0 1.0 0.70 ;
+                         1.0 0.0 0.51 ; 1.0 1.0 0.89 ; 1.0 1.0 0.79 ;
+                         1.0 0.0 0.54 ]
+    testNet.realMatrixOutputSet = [ 1.0 0.0; 1.0 0.0; 1.0 0.0; 
+                                    1.0 0.0; 1.0 0.0; 0.0 1.0;
+                                    0.0 1.0; 0.0 1.0; 0.0 1.0; 
+                                    0.0 1.0 ]
+
+    testNet.maxEpochs = 1000
+    testNet.targetError = 0.002
+    testNet.learningRate = 0.1
+    testNet.trainType = TrainingTypesENUM(LEVENBERG_MARQUARDT)
+    testNet.activationFncType = ActivationFncENUM(SIGLOG)
+    testNet.activationFncTypeOutputLayer = ActivationFncENUM(LINEAR)
+
+    trainedNet = trainNet(testNet)
+
+    println()
+    println("---------BACKPROPAGATION TRAINED NET---------")
+
+    printNet(trainedNet)
+
+end
+
+
+function testKohonen()
+    # 2 inputs because of "bias"
+    testNet = initNet(2, 0, 0, 2)
+
+    testNet.trainSet = [ 1.0 -1.0  1.0; -1.0 -1.0 -1.0; -1.0 -1.0  1.0
+                         1.0  1.0 -1.0; -1.0  1.0  1.0;  1.0 -1.0 -1.0 ]
+
+    testNet.validationSet = [ -1.0  1.0 -1.0; 
+                               1.0  1.0  1.0 ]
+
+    testNet.maxEpochs = 10
+    testNet.learningRate = 0.1
+    testNet.trainType = TrainingTypesENUM(KOHONEN)
+
+    trainedNet = trainNet(testNet)
+
+    println()
+    println("---------KOHONEN VALIDATION NET---------")
+
+    netValidation(trainedNet)
+
+end
+
+
