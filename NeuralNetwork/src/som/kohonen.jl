@@ -9,7 +9,8 @@ function train!(n::NeuralNet)
 
 		for row_i = 1:rows
 			listOfDistances = calcEuclideanDistance(n, trainData, row_i)
-#			winnerNeuron = listOfDistances
+			 
+			winnerNeuron, winnerNeuronIndex = findmin(listOfDistances)  # TODO: check
 			
 			n = fixWinnerWeights(n, winnerNeuron, row_i)
 		end
@@ -38,7 +39,7 @@ end
 
 function calcEuclideanDistance(n::NeuralNet, data::Matrix{Float64}, row::Int)
 
-	weight_i = 0.0
+	weight_i = 0
 
 	for cluster_i = 1:n.outputLayer.numberOfNeuronsInLayer
 
@@ -73,7 +74,7 @@ function fixWinnerWeights(n::NeuralNet, winnerNeuron::Int, trainSetRow::Int)
 
 	last = start + n.inputLayer.numberOfNeuronsInLayer
 
-#	listOfOldWeights = sub(n.inputLayer.listOfNeurons[1].listOfWeightOut, 
+	listOfOldWeights = n.inputLayer.listOfNeurons[1].listOfWeightOut[start:last]  # TODO: check
 	
 	listOfWeights = n.inputLayer.listOfNeurons[1].listOfWeightOut
 
@@ -106,7 +107,7 @@ function netValidation(n::NeuralNet)
 	for row_i = 1:rows
 		listOfDistances = calcEuclideanDistance(n, validationData, row_i)
 
-#		winnerNeuron = listOfDistances
+		winnerNeuron, winnerNeuronIndex = findmin(listOfDistances)  # TODO: check
 		println("### VALIDATION RESULT ###")
 
 		if winnerNeuron == 0

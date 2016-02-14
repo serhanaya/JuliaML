@@ -18,7 +18,7 @@ function testPerceptron()
     testNet.trainType = TrainingTypesENUM(PERCEPTRON)
     testNet.activationFncType = ActivationFncENUM(STEP)
 
-    trainedNet = train!(testNet)
+    trainedNet = trainNet(testNet)  # TODO: check
 
     println()
     println("---------PERCEPTRON TRAINED NET---------")
@@ -50,7 +50,7 @@ function testAdaline()
     testNet.trainType = TrainingTypesENUM(ADALINE)
     testNet.activationFncType = ActivationFncENUM(LINEAR)
 
-    trainedNet = train!(testNet)
+    trainedNet = trainNet(testNet)  # TODO: check
 
     println()
     println("---------ADALINE TRAINED NET---------")
@@ -91,7 +91,7 @@ function testBackpropagation()
     testNet.activationFncType = ActivationFncENUM(SIGLOG)
     testNet.activationFncTypeOutputLayer = ActivationFncENUM(LINEAR)
 
-    trainedNet = trainNet(testNet)
+    trainedNet = trainNet(testNet)  # todo: check
 
     println()
     println("---------BACKPROPAGATION TRAINED NET---------")
@@ -125,7 +125,7 @@ function testLMA()
     testNet.activationFncType = ActivationFncENUM(SIGLOG)
     testNet.activationFncTypeOutputLayer = ActivationFncENUM(LINEAR)
 
-    trainedNet = trainNet(testNet)
+    trainedNet = trainNet(testNet)  # todo: check.
 
     println()
     println("---------BACKPROPAGATION TRAINED NET---------")
@@ -149,7 +149,7 @@ function testKohonen()
     testNet.learningRate = 0.1
     testNet.trainType = TrainingTypesENUM(KOHONEN)
 
-    trainedNet = trainNet(testNet)
+    trainedNet = trainNet(testNet)  # todo: check
 
     println()
     println("---------KOHONEN VALIDATION NET---------")

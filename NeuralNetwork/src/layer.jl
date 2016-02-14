@@ -123,13 +123,13 @@ function initLayer(hiddenLayer::HiddenLayer, inputLayer::InputLayer,
                    outputLayer::OutputLayer, listOfHiddenLayer::Vector{HiddenLayer})
     listOfWeightIn = Vector{Float64}(0)
     listOfWeightOut = Vector{Float64}(0)
-    listOfNeurons = Vector{Float64}(0)
+    listOfNeurons = Vector{Neuron}(0)
 
     numberOfHiddenLayers = size(listOfHiddenLayer)[1]
 
     for hdn_i=1:numberOfHiddenLayers
         for neuron_i=1:hiddenLayer.numberOfNeuronsInLayer
-            neuron = Neuron()
+#            neuron = Neuron()
 
             limitIn = 0
             limitOut = 0
@@ -164,8 +164,8 @@ function initLayer(hiddenLayer::HiddenLayer, inputLayer::InputLayer,
                 # push!( listOfWeightOut, initNeuron(k, neuron_i, 2) )
             end
 
-            neuron.listOfWeightIn = listOfWeightIn
-            neuron.listOfWeightOut = listOfWeightOut
+            neuron = Neuron(listOfWeightIn = listOfWeightIn,
+                listOfWeightOut = listOfWeightOut)
             push!( listOfNeurons, neuron )
 
             listOfWeightIn = Vector{Float64}(0)
@@ -173,7 +173,7 @@ function initLayer(hiddenLayer::HiddenLayer, inputLayer::InputLayer,
 
         end
 
-        listOfHiddenLayer[i].listOfNeurons  = listOfNeurons
+        listOfHiddenLayer[hdn_i].listOfNeurons  = listOfNeurons  # TODO: check
         listOfNeurons = Vector{Float64}(0)
 
     end
