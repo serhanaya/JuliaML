@@ -12,7 +12,7 @@ NNet.testAdaline()
 
 NNet.testBackpropagation()
 
-NNnet.testKohonen()
+NNet.testKohonen()
 ```
 
 Basic implementation is ready (tested).
