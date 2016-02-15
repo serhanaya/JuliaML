@@ -1,6 +1,6 @@
-function train!(n::NeuralNet)
+function trainKN!(n::NeuralNet)
 	rows = size(n.trainSet)[1]
-	n = initNet(n)
+	n = initNetKN(n)
 	trainData = n.trainSet
 
 	for epoch = 1:n.maxEpochs
@@ -9,20 +9,20 @@ function train!(n::NeuralNet)
 
 		for row_i = 1:rows
 			listOfDistances = calcEuclideanDistance(n, trainData, row_i)
-			 
-			winnerNeuron, winnerNeuronIndex = findmin(listOfDistances)  # TODO: check
-			
+
+			winnerNeuronValue, winnerNeuron = findmin(listOfDistances)  # TODO: check
+
 			n = fixWinnerWeights(n, winnerNeuron, row_i)
 		end
 
     end
-	
+
 	return n
 
 end
 
 
-function initNet(n::NeuralNet)
+function initNetKN(n::NeuralNet)
 
 	listOfWeightOut = Vector{Float64}(0)
 
@@ -39,7 +39,8 @@ end
 
 function calcEuclideanDistance(n::NeuralNet, data::Matrix{Float64}, row::Int)
 
-	weight_i = 0
+	listOfDistances = Vector{Float64}(0)
+	weight_i = 1
 
 	for cluster_i = 1:n.outputLayer.numberOfNeuronsInLayer
 
@@ -68,22 +69,22 @@ function fixWinnerWeights(n::NeuralNet, winnerNeuron::Int, trainSetRow::Int)
 
 	start = winnerNeuron * n.inputLayer.numberOfNeuronsInLayer
 
-	if start < 0
-		start = 0
+	if start <= 0
+		start = 1
 	end
 
-	last = start + n.inputLayer.numberOfNeuronsInLayer
+	last = n.inputLayer.numberOfNeuronsInLayer # TODO: check
 
 	listOfOldWeights = n.inputLayer.listOfNeurons[1].listOfWeightOut[start:last]  # TODO: check
-	
+
 	listOfWeights = n.inputLayer.listOfNeurons[1].listOfWeightOut
 
-	col_i = 0
+	col_i = 1
 
 	for j = start:last
 
 		trainSetValue = n.trainSet[trainSetRow, col_i]
-		newWeight = listOfOldWeights[col_i] + n.learningRate * 
+		newWeight = listOfOldWeights[col_i] + n.learningRate *
 			( trainSetValue - listOfOldWeights[col_i] )
 
 		# println("newWeight: " + newWeight)
@@ -107,7 +108,7 @@ function netValidation(n::NeuralNet)
 	for row_i = 1:rows
 		listOfDistances = calcEuclideanDistance(n, validationData, row_i)
 
-		winnerNeuron, winnerNeuronIndex = findmin(listOfDistances)  # TODO: check
+		winnerNeuronValue, winnerNeuron = findmin(listOfDistances)  # TODO: check
 		println("### VALIDATION RESULT ###")
 
 		if winnerNeuron == 0
@@ -117,8 +118,7 @@ function netValidation(n::NeuralNet)
 			println("CLUSTER 2")
 			break;
 		else
-			throw(Error("Error! Without neural clustering..."))
+			throw(ArgumentError("Error! Without neural clustering..."))
 		end
 	end
 end
-

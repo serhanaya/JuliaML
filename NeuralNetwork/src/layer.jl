@@ -202,5 +202,3 @@ function printLayer(listOfHiddenLayer::Vector{HiddenLayer})
         end
     end
 end
-
-

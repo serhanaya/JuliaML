@@ -4,10 +4,17 @@ A glimpse on the use of Nnet:
 
 import Nnet
 
-Nnet.testPerceptron()
+NNet.testPerceptron()
 
-Nnet.testAdaline()
+NNet.testAdaline()
 
+# TODO: NNet.testLMA()
+
+NNet.testBackpropagation()
+
+NNnet.testKohonen()
 ```
 
-Basic implementation is ready (tested). More comments on usage will be available soon. Advanced techniques will be implemented soon.
+Basic implementation is ready (tested).
+
+More comments on usage will be available soon. Advanced techniques are implementing and testing.

@@ -126,5 +126,3 @@ function derivativeActivationFnc(fnc::ActivationFncENUM, value::Float64)
 
     end
 end
-
-

@@ -1,10 +1,6 @@
-# rows @line21
-# super.activate
-
-function train!(n::NeuralNet)
+function trainBP!(n::NeuralNet)
     epoch = 0
     mse = 1.0
-
 
     while mse < n.targetError
         if epoch >= n.targetError
@@ -149,7 +145,7 @@ function backpropagation!(n::NeuralNet, row::Int)
     for outLayer_i = 1:outputLayer.numberOfNeuronsInLayer
 
         for neuron::Neuron in hiddenLayer
-            netWeight = neuron.listOfWeightOut[outLayer_i] + 
+            netWeight = neuron.listOfWeightOut[outLayer_i] +
                 ( n.learningRate * outputLayer[outLayer_i].sensibility * neuron.outputValue )
 
             neuron.listOfWeightOut[outLayer_i] = newWeight  # Kontrol et!
@@ -168,8 +164,8 @@ function backpropagation!(n::NeuralNet, row::Int)
             netWeight = 0.0
 
             for i = 1:n.inputLayer.numberOfNeuronsInLayer
-                newWeight = hiddenLayerInputWeights[hidden_i] + 
-                    ( n.learningRate * neuron.sensibility * 
+                newWeight = hiddenLayerInputWeights[hidden_i] +
+                    ( n.learningRate * neuron.sensibility *
                         neuron.sensibility * n.trainSet[row, i] )
 
                 neuron.listOfWeightIn[hidden_i] = newWeight
@@ -187,9 +183,3 @@ function backpropagation!(n::NeuralNet, row::Int)
     return n
 
 end
-
-
-
-
-
-

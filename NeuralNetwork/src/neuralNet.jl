@@ -21,7 +21,6 @@ type NeuralNet
     errorMean::Float64
     listOfMSE::Vector{Float64}
 
-
     activationFncType::ActivationFncENUM
     activationFncTypeOutputLayer::ActivationFncENUM
     trainType::TrainingTypesENUM
@@ -81,15 +80,17 @@ end
 
 function trainNet(n::NeuralNet)
     if n.trainType == PERCEPTRON
-        return training.train!(n)
+        return train!(n)
     elseif n.trainType == ADALINE
-        return training.train!(n)
+        return train!(n)
     elseif n.trainType == BACKPROPAGATION
-        return backpropagation.train!(n)
+        return trainBP!(n)
+    elseif n.trainType == LEVENBERG_MARQUARDT
+        return trainMQ!(n)
     elseif n.trainType == KOHONEN
-        return kohonen.train!(n)
+        return trainKN!(n)
     else
-        throw(Error(n.trainType, " does not exist in TrainingTypesENUM"))
+        print(n.trainType, " does not exist in TrainingTypesENUM")
     end
 end
 
@@ -125,6 +126,6 @@ function netValidation(n::NeuralNet)
         netValidation( n )
         break
     else
-        throw(Error(n.trainType, " does not exists in TrainingTypesENUM"))
+        print(n.trainType, " does not exists in TrainingTypesENUM")
     end
 end

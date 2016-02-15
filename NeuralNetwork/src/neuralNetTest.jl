@@ -75,13 +75,13 @@ function testBackpropagation()
     printNet(testNet)
 
     # first column has BIAS
-    testNet.trainSet = [ 1.0 1.0 0.73 ; 1.0 1.0 0.81 ; 1.0 1.0 0.86 ; 
+    testNet.trainSet = [ 1.0 1.0 0.73 ; 1.0 1.0 0.81 ; 1.0 1.0 0.86 ;
                          1.0 1.0 0.95 ; 1.0 0.0 0.45 ; 1.0 1.0 0.70 ;
                          1.0 0.0 0.51 ; 1.0 1.0 0.89 ; 1.0 1.0 0.79 ;
                          1.0 0.0 0.54 ]
-    testNet.realMatrixOutputSet = [ 1.0 0.0; 1.0 0.0; 1.0 0.0; 
+    testNet.realMatrixOutputSet = [ 1.0 0.0; 1.0 0.0; 1.0 0.0;
                                     1.0 0.0; 1.0 0.0; 0.0 1.0;
-                                    0.0 1.0; 0.0 1.0; 0.0 1.0; 
+                                    0.0 1.0; 0.0 1.0; 0.0 1.0;
                                     0.0 1.0 ]
 
     testNet.maxEpochs = 1000
@@ -109,13 +109,13 @@ function testLMA()
     printNet(testNet)
 
      # first column has BIAS
-    testNet.trainSet = [ 1.0 1.0 0.73 ; 1.0 1.0 0.81 ; 1.0 1.0 0.86 ; 
+    testNet.trainSet = [ 1.0 1.0 0.73 ; 1.0 1.0 0.81 ; 1.0 1.0 0.86 ;
                          1.0 1.0 0.95 ; 1.0 0.0 0.45 ; 1.0 1.0 0.70 ;
                          1.0 0.0 0.51 ; 1.0 1.0 0.89 ; 1.0 1.0 0.79 ;
                          1.0 0.0 0.54 ]
-    testNet.realMatrixOutputSet = [ 1.0 0.0; 1.0 0.0; 1.0 0.0; 
+    testNet.realMatrixOutputSet = [ 1.0 0.0; 1.0 0.0; 1.0 0.0;
                                     1.0 0.0; 1.0 0.0; 0.0 1.0;
-                                    0.0 1.0; 0.0 1.0; 0.0 1.0; 
+                                    0.0 1.0; 0.0 1.0; 0.0 1.0;
                                     0.0 1.0 ]
 
     testNet.maxEpochs = 1000
@@ -125,7 +125,7 @@ function testLMA()
     testNet.activationFncType = ActivationFncENUM(SIGLOG)
     testNet.activationFncTypeOutputLayer = ActivationFncENUM(LINEAR)
 
-    trainedNet = trainNet(testNet)  # todo: check.
+    trainedNet = trainNet(testNet)  # TODO: check.
 
     println()
     println("---------BACKPROPAGATION TRAINED NET---------")
@@ -142,7 +142,7 @@ function testKohonen()
     testNet.trainSet = [ 1.0 -1.0  1.0; -1.0 -1.0 -1.0; -1.0 -1.0  1.0
                          1.0  1.0 -1.0; -1.0  1.0  1.0;  1.0 -1.0 -1.0 ]
 
-    testNet.validationSet = [ -1.0  1.0 -1.0; 
+    testNet.validationSet = [ -1.0  1.0 -1.0;
                                1.0  1.0  1.0 ]
 
     testNet.maxEpochs = 10
@@ -157,5 +157,3 @@ function testKohonen()
     netValidation(trainedNet)
 
 end
-
-
