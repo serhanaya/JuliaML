@@ -86,7 +86,7 @@ end
 function activationFnc(fnc::ActivationFncENUM, value::Float64)
 
     if fnc == ActivationFncENUM(STEP)
-        if value >= 0
+        if value > 0
             return 1.0
         else
             return 0.0
