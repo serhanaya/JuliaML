@@ -13,7 +13,7 @@ end
 
 function trainMQ!(n::NeuralNet)
     epoch = 0
-    mse 0 1.0
+    mse = 1.0
 
     while mse > n.targetError
         if epoch >= n.maxEpochs
@@ -60,6 +60,37 @@ function buildJacobianMatrix(n::NeuralNet, row::Int)
 	numberOfHiddenNeurons = n.hiddenLayer.numberOfNeuronsInLayer
 	numberOfOututs = n.outputLayer.numberOfNeuronsInLayer
 
-	if jacobian == null
+	if isdefined(:jacobian) == false
+		nrows = size(n.trainSet)[1]
+		ncols = (numberOfInputs)*(numberOfHiddenNeurons-1)+
+			(numberOfHiddenNeurons)*(numberOfOutputs)
+		jacobian = Array(Float64, nrows, ncols)
+	end
 
-		
+	i = 1
+	# Hidden Layer
+	for (neuron::Neuron in hiddenLayer)
+		hiddenLayerInputWeights = neuron.listOfWeightIn
+
+		if  size(hiddenLayerInputWeights)[1] > 0  # exclude bias
+			for j = 1:n.inputLayer.numberOfNeuronsInLayer
+				jacobian[row, ((i-1)*(numberOfInputs))+(j)] =
+				     (neuron.sensibility * n.trainSet[row,j])/n.errorMean  # TODO: check
+			end
+		else
+			# jacobian[row, i*numberOfInputs] = 1.0
+		end
+		# Bias will have no effect
+		i += 1
+	end
+
+	if isdefined(error) == false
+		error = Array(size(n.trainSet)[1], 1)
+	end
+
+	i = 1
+	# output layer
+	for output::Neuron in outputLayer
+		j = 1
+		for neuron::Neuron in hiddenLayer
+			jacobian[]

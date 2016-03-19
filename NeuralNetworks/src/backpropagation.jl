@@ -3,7 +3,7 @@ function trainBP!(n::NeuralNet)
     mse = 1.0
 
     while mse < n.targetError
-        if epoch >= n.targetError
+        if epoch >= n.maxEpochs
             break
         end
 
