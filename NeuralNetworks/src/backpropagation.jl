@@ -32,13 +32,12 @@ function forward!(n::NeuralNet, row::Int)
     sumError = 0.0
 
     if size(listOfHiddenLayer)[1] > 0
-        hiddenLayer_i = 0
+        hiddenLayer_i = 1
 
         for hiddenLayer::HiddenLayer in listOfHiddenLayer
             numberOfNeuronsInLayer = hiddenLayer.numberOfNeuronsInLayer
 
             for neuron::Neuron in hiddenLayer.listOfNeurons
-
                 netValueOut = 0.0
 
                 if size(neuron.listOfWeightIn)[1] > 0  # exclude bias
@@ -52,15 +51,12 @@ function forward!(n::NeuralNet, row::Int)
                     # output hidden layer (1)
                     netValueOut = activationFnc(n.activationFncType, netValue)
                     neuron.outputValue = netValueOut
-
                 else
                     neuron.outputValue = 1.0
                 end
-
             end
 
             # output hidden layer (2)
-
             for outLayer_i = 1:n.outputLayer.numberOfNeuronsInLayer
                 netValue = 0.0
                 netValueOut = 0.0
@@ -71,9 +67,7 @@ function forward!(n::NeuralNet, row::Int)
                 end
 
                 netValueOut = activationFnc(n.activationFncTypeOutputLayer, netValue)
-
                 n.outputLayer.listOfNeurons[outLayer_i].outputValue = netValueOut
-
                 # error
                 estimatedOutput = netValueOut
                 realOutput = n.realMatrixOutputSet[row, outLayer_i]
@@ -86,24 +80,16 @@ function forward!(n::NeuralNet, row::Int)
             # error mean
             errorMean = sumError / n.outputLayer.numberOfNeuronsInLayer
             n.errorMean = errorMean
-
             n.listOfHiddenLayer[hiddenLayer_i].listOfNeurons = hiddenLayer.listOfNeurons
-
             hiddenLayer_i += 1
-
         end
-
     end
-
     return n
-
 end
 
 function backpropagation!(n::NeuralNet, row::Int)
     outputLayer = n.outputLayer.listOfNeurons
-
     hiddenLayer = n.listOfHiddenLayer[1].listOfNeurons
-
     error = 0.0
     netValue = 0.0
     sensibility = 0.0
@@ -113,9 +99,7 @@ function backpropagation!(n::NeuralNet, row::Int)
         error = neuron.error
         netValue = neuron.outputValue
         sensibility = derivativeActivationFnc(n.activationFncTypeOutputLayer, netValue * error)
-
         neuron.sensibility = sensibility
-
     end
 
     # sensibility hidden layer
@@ -124,58 +108,40 @@ function backpropagation!(n::NeuralNet, row::Int)
 
         if (size(neuron.listOfWeightIn)[1] > 0) # exclude bias
             listOfWeightsOut = neuron.listOfWeightOut
-
             tempSensibility = 0.0
-
-            weight_i = 0
+            weight_i = 1
             for weight in listOfWeightsOut
                 tempSensibility += weight * outputLayer[weight_i].sensibility
                 weight_i += 1
             end
-
             sensibility = derivativeActivationFnc(n.activationFncType, neuron.outputValue) * tempSensibility
-
             neuron.sensibility = sensibility
-
         end
-
     end
 
     # fix weights (teach) [output layer to hidden layer]
-    for outLayer_i = 1:outputLayer.numberOfNeuronsInLayer
-
+    for outLayer_i = 1:n.outputLayer.numberOfNeuronsInLayer
         for neuron::Neuron in hiddenLayer
-            netWeight = neuron.listOfWeightOut[outLayer_i] +
+            newWeight = neuron.listOfWeightOut[outLayer_i] +
                 ( n.learningRate * outputLayer[outLayer_i].sensibility * neuron.outputValue )
-
-            neuron.listOfWeightOut[outLayer_i] = newWeight  # Kontrol et!
-
+            neuron.listOfWeightOut[outLayer_i] = newWeight  # TODO: check
         end
-
     end
 
     # fix weights (teach) [hidden layer to input layer]
     for neuron::Neuron in hiddenLayer
         hiddenLayerInputWeights = neuron.listOfWeightIn
-
         if size(hiddenLayerInputWeights)[1] > 0  # exclude bias
-
-            hidden_i = 0
+            hidden_i = 1
             netWeight = 0.0
-
             for i = 1:n.inputLayer.numberOfNeuronsInLayer
                 newWeight = hiddenLayerInputWeights[hidden_i] +
                     ( n.learningRate * neuron.sensibility *
                         neuron.sensibility * n.trainSet[row, i] )
-
                 neuron.listOfWeightIn[hidden_i] = newWeight
-
                 hidden_i += 1
-
             end
-
         end
-
     end
 
     n.listOfHiddenLayer[1].listOfNeurons = hiddenLayer

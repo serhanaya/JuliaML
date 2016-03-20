@@ -28,7 +28,7 @@ function buildJacobianMatrix(n::NeuralNet, row::Int)
 	outputLayer = n.outputLayer.listOfNeurons
 	hiddenLayer = n.listOfHiddenLayer[1].listOfNeurons
 	nb = backpropagation!(n, row)
-	numberOfInputs = n.getInputLayer.numberOfNeuronsInLayer
+	numberOfInputs = n.inputLayer.numberOfNeuronsInLayer
 	numberOfHiddenNeurons = n.hiddenLayer.numberOfNeuronsInLayer
 	numberOfOutputs = n.outputLayer.numberOfNeuronsInLayer
 	if isdefined(:jacobian) == false
@@ -52,7 +52,7 @@ function buildJacobianMatrix(n::NeuralNet, row::Int)
 		# Bias will have no effect
 		i += 1
 	end
-	if isdefined(error) == false
+	if isdefined(:error) == false
 		error = Array(Float64, size(n.trainSet)[1], 1)
 	end
 	i = 1
@@ -60,16 +60,15 @@ function buildJacobianMatrix(n::NeuralNet, row::Int)
 	for output::Neuron in outputLayer
 		j = 1
 		for neuron::Neuron in hiddenLayer
-			jacobian[row, (numberOfInputs)*(numberOfHiddenNeurons-1)+
-						(i*(numberOfHiddenNeurons))+j] =
-                output.sensibility * neuron.outputValue/n.errorMean
+			jacobian[row, (numberOfInputs * (numberOfHiddenNeurons-1) + i*numberOfHiddenNeurons + j)] =
+                (output.sensibility * neuron.outputValue)/n.errorMean  # TODO: check
+			j += 1
 		end
-		j += 1
+		# Bias will have no effect
+		# jacobian[row, (numberOfInputs)*(numberOfHiddenNeurons-1)+
+		#			(i*(numberOfHiddenNeurons))+j] = 1.0
+		i += 1
 	end
-	# Bias will have no effect
-	# jacobian[row, (numberOfInputs)*(numberOfHiddenNeurons-1)+
-	#			(i*(numberOfHiddenNeurons))+j] = 1.0
-	i += 1
 	error[row, 1] = n.errorMean
 end
 
@@ -99,12 +98,13 @@ function updateWeights!(n::NeuralNet)
 		end
 	end
 
-	i += 1
+	i = 1
 	for output::Neuron in outputLayer
-		j += 1
+		j = 1
 		newWeight = 0.0
 		for neuron::Neuron in hiddenLayer
-			newWeight = neuron.listOfWeightOut[i] + delta[numberOfInputs * (numberOfHiddenNeurons-1) + (i * numberOfHiddenNeurons) + j, 1]
+			newWeight = neuron.listOfWeightOut[i] + delta[numberOfInputs *
+					(numberOfHiddenNeurons-1) + (i * numberOfHiddenNeurons) + j, 1]
 			push!(neuron.listOfWeightOut[i], newWeight)
 			j += 1
 		end

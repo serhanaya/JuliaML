@@ -1,22 +1,25 @@
-A glimpse on the use of Nnet:
+A glimpse on the use of NNet:
 
 ```julia
 
 push!(LOAD_PATH, pwd())
 
-import Nnet
+import NNet
 
 NNet.testPerceptron()
 
 NNet.testAdaline()
 
-# TODO: NNet.testLMA()
+NNet.testLMA()
 
-NNet.testBackpropagation()/Users/serhan/Desktop/projects/juliaML/NeuralNetworks/src/NNet.jl
+NNet.testBackpropagation()
 
 NNet.testKohonen()
 ```
 
-Basic implementation is ready (tested).
+Basic implementation is ready and tested - Perceptron and Adaline.
 
-More comments on usage will be available soon. Advanced techniques are implementing and testing.
+Advanced techniques are implementing and testing.
+
+Please see the post at [my blog](http://serhanaya.github.io) for implementation
+details and a use-case example.
