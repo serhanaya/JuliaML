@@ -70,7 +70,7 @@ function forward!(n::NeuralNet, row::Int)
                     netValue = netValue + hiddenWeightOut * neuron.outputValue
                 end
 
-                netValueOut = activationFnc(n.activationFncOutputLayer, netValue)
+                netValueOut = activationFnc(n.activationFncTypeOutputLayer, netValue)
 
                 n.outputLayer.listOfNeurons[outLayer_i].outputValue = netValueOut
 
@@ -112,7 +112,7 @@ function backpropagation!(n::NeuralNet, row::Int)
     for neuron::Neuron in outputLayer
         error = neuron.error
         netValue = neuron.outputValue
-        sensibility = derivativeActivationFnc(n.activationFncOutputLayer, netValue * error)
+        sensibility = derivativeActivationFnc(n.activationFncTypeOutputLayer, netValue * error)
 
         neuron.sensibility = sensibility
 

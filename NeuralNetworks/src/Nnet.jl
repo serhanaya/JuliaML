@@ -11,6 +11,7 @@ include("neuralNet.jl")
 include("neuralNetTest.jl")
 include("training.jl")
 include("backpropagation.jl")
+include("levenbergMarquardt.jl")
 include("kohonen.jl")
 
 export Neuron, Layer, InputLayer, OutputLayer, HiddenLayer, initNeuron, printLayer,
