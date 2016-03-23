@@ -18,7 +18,7 @@ numberOfVariables = 1               # number of variables
 numberOfGenerations = 10000         # maximum number of generations
 populationSize = 10                 # population size
 variableBound = [40 90]             # variable bound
-numberOfBits = Array{Int,1}         # number of bits (related to sensitivity)
+numberOfBits = Array{Int,1}()       # number of bits (related to sensitivity)
 push!(numberOfBits, 15)
 crossoverProbability = 0.9          # crossover probability
 multiCrossover = 1                  # use multi-crossover
@@ -31,7 +31,10 @@ stallGenerations = 500              # stall generations for termination
 numberOfConstaints = 0              # for constraint handling
 #
 #################################################
+# import necessary libraries.
+using Distributions
 #
+#################################################
 # Initialization of strings
 stringLength = 0
 for i = 1:numberOfVariables
