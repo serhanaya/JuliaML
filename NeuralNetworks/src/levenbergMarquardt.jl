@@ -60,7 +60,7 @@ function buildJacobianMatrix(n::NeuralNet, row::Int)
 	for output::Neuron in outputLayer
 		j = 1
 		for neuron::Neuron in hiddenLayer
-			jacobian[row, (numberOfInputs * (numberOfHiddenNeurons-1) + i*numberOfHiddenNeurons + j)] =
+			jacobian[row, (numberOfInputs + 1) * (numberOfHiddenNeurons) + (i*numberOfHiddenNeurons) + j] =
                 (output.sensibility * neuron.outputValue)/n.errorMean  # TODO: check
 			j += 1
 		end
